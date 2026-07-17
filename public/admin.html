@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<!-- 家庭点菜 · 后台管理页面（admin.html）
+     你（管理员）在这里登录，编辑菜单、看订单、管理菜库、改密码。 -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 · 家庭点菜</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ===== 登录界面 ===== -->
+  <div id="loginView" class="login-view">
+    <div class="login-box card">
+      <h1>🔐 后台登录</h1>
+      <input type="password" id="loginPwd" placeholder="请输入密码">
+      <button id="loginBtn" class="primary">登录</button>
+      <p id="loginMsg" class="msg"></p>
+    </div>
+  </div>
+
+  <!-- ===== 管理界面 ===== -->
+  <div id="adminView" class="admin-view" style="display:none">
+    <header class="topbar">
+      <h1>🍳 家庭点菜 · 后台</h1>
+      <button id="logoutBtn" class="link-btn">退出</button>
+    </header>
+
+    <!-- 标签栏 -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="menu">菜单管理</button>
+      <button class="tab" data-tab="dishes">菜库</button>
+      <button class="tab" data-tab="orders">订单查看</button>
+      <button class="tab" data-tab="pwd">修改密码</button>
+    </nav>
+
+    <!-- 菜单管理 -->
+    <section class="card tab-panel" id="panel-menu">
+      <h2>菜单（点菜页展示的菜）</h2>
+      <div id="menuTable"></div>
+      <h3>新增 / 修改</h3>
+      <input type="hidden" id="menuId">
+      <div class="form-row"><label>菜名</label><input type="text" id="menuName" placeholder="如：红烧肉"></div>
+      <div class="form-row">
+        <label>分类</label>
+        <select id="menuCat">
+          <option>荤菜</option><option>素菜</option><option>汤羹</option><option>主食</option><option>凉菜</option>
+        </select>
+      </div>
+      <div class="form-row"><label>价格</label><input type="number" id="menuPrice" placeholder="0 表示不显示"></div>
+      <div class="form-row"><label>备注</label><input type="text" id="menuDesc" placeholder="如：肥而不腻"></div>
+      <div class="form-row"><label>在售</label><input type="checkbox" id="menuAvail" checked></div>
+      <button id="menuSave" class="primary">保存</button>
+      <button id="menuReset">清空表单</button>
+    </section>
+
+    <!-- 菜库（原随机菜库） -->
+    <section class="card tab-panel" id="panel-dishes" style="display:none">
+      <h2>菜库（共 <span id="dishTotal">0</span> 道）</h2>
+
+      <!--  Excel 导出 / 导入（管理员批量管理菜库） -->
+      <div class="excel-bar">
+        <button id="dishExport" class="ghost">⬇️ 导出 Excel</button>
+        <button id="dishImportBtn" class="ghost">⬆️ 导入 Excel</button>
+        <input type="file" id="dishImportFile" accept=".xlsx,.xls" style="display:none">
+        <label class="chk"><input type="checkbox" id="dishReplace"> 清空并整张替换</label>
+        <span id="excelMsg" class="msg"></span>
+      </div>
+      <p class="hint">导出后会下载一份 Excel（含「菜名 / 分类 / 主菜」三列），用 Excel 或 WPS 编辑后，点「导入 Excel」选文件即可。默认<strong>按菜名合并</strong>（已有菜更新、新菜追加）；勾选「清空并整张替换」则整张覆盖。</p>
+
+      <div id="dishTable"></div>
+      <h3>新增 / 修改一道菜</h3>
+      <input type="hidden" id="dishId">
+      <div class="form-row"><label>菜名</label><input type="text" id="dishName" placeholder="菜名"></div>
+      <div class="form-row">
+        <label>主菜</label>
+        <!-- 用 datalist 既能在下拉里选常用主菜，也能自己打字填新的 -->
+        <input type="text" id="dishMain" list="mainList" placeholder="如：猪肉 / 鸡肉 / 蔬菜">
+        <datalist id="mainList">
+          <option>猪肉</option><option>鸡肉</option><option>鸭肉</option><option>牛肉</option>
+          <option>羊肉</option><option>鱼虾海鲜</option><option>鸡蛋</option><option>豆腐</option>
+          <option>蔬菜</option><option>菌菇</option><option>主食</option><option>其他</option>
+        </datalist>
+      </div>
+      <div class="form-row">
+        <label>分类</label>
+        <select id="dishCat">
+          <option>荤菜</option><option>素菜</option><option>汤羹</option><option>主食</option><option>凉菜</option>
+        </select>
+      </div>
+      <button id="dishSave" class="primary">保存</button>
+      <button id="dishReset">清空表单</button>
+    </section>
+
+    <!-- 订单查看 -->
+    <section class="card tab-panel" id="panel-orders" style="display:none">
+      <h2>订单（最新在前）</h2>
+      <p class="hint">为防止数据过多，系统只保留最新的 3 条订单记录。</p>
+      <div id="orderTable"></div>
+    </section>
+
+    <!-- 修改密码 -->
+    <section class="card tab-panel" id="panel-pwd" style="display:none">
+      <h2>修改后台密码</h2>
+      <div class="form-row"><label>原密码</label><input type="password" id="oldPwd"></div>
+      <div class="form-row"><label>新密码</label><input type="password" id="newPwd"></div>
+      <button id="pwdSave" class="primary">保存密码</button>
+      <p id="pwdMsg" class="msg"></p>
+    </section>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

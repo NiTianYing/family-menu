@@ -1,0 +1,22 @@
+# ============================================================
+#  Render 部署配置文件（Blueprint）
+#  作用：把这份文件放进项目根目录，在 Render 面板点 “New” → “Blueprint”，
+#        选这个文件就能一键建好 Web 服务，不用手动填参数。
+#  也可以不用的：直接在 Render 手动建 Web Service，参数都和这里一致。
+#  注意：HF_TOKEN / HF_DATASET 两个密钥留空(sync:false)，
+#        部署后在 Render 面板的 Environment 里手动填（不要写进文件）。
+# ============================================================
+
+services:
+  - type: web                 # web 服务（提供网页）
+    name: family-menu         # 服务名，会变成网址前缀：family-menu.onrender.com
+    runtime: node             # 用 Node 运行（Render 自动检测 Node 版本）
+    plan: free                # 免费套餐（不用信用卡，有 750 小时/月，够 24 小时开着）
+    buildCommand: npm install # 构建命令：装依赖（本项目零依赖，秒过）
+    startCommand: npm start   # 启动命令：运行 server.js
+    healthCheckPath: /        # 健康检查路径：访问首页算正常
+    envVars:
+      - key: HF_TOKEN         # Hugging Face 写权限令牌（数据集持久化用）
+        sync: false           # 不写进文件，部署后在面板手动填真实值
+      - key: HF_DATASET       # 数据集仓库名，格式：用户名/数据集名
+        sync: false           # 不写进文件，部署后在面板手动填真实值

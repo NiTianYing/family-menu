@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!-- 家庭点菜 · 用户前端页面（index.html）
+     家人打开网页直接点菜（免密码，自动登录），像外卖一样选菜、许愿、下单。
+     整体布局：
+       顶部标题栏 → 左侧“分类边栏”(现有菜 + 按主菜分组) → 右侧“菜品区”
+       底部固定“购物车栏” → 点“去下单”弹出勾选清单+许愿的结算框
+       首页顶部还有“我最近点的”卡片，显示本机最近一笔订单 -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>家庭点菜</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========== 点菜主界面（打开即进入，免密码自动登录） ========== -->
+  <div id="appView">
+    <!-- 顶部标题栏 -->
+    <header class="topbar">
+      <h1>🍽️ 家庭点菜</h1>
+      <div class="top-actions">
+        <button id="randomOpenBtn" class="top-btn">🎲 随机</button>
+      </div>
+    </header>
+
+    <!-- 外卖式布局：左分类边栏 + 右菜品区 -->
+    <div class="order-layout">
+      <!-- 左侧分类边栏（由 JS 动态生成） -->
+      <aside class="sidebar" id="sidebar"></aside>
+
+      <!-- 右侧菜品区 -->
+      <main class="dish-area">
+        <!-- 我最近点的（下单后自动显示，订单号存在本机浏览器） -->
+        <div id="lastOrderBox" class="last-order" style="display:none"></div>
+        <h2 id="catTitle" class="cat-title-big">现有菜</h2>
+        <div id="dishList"><p class="loading">加载中…</p></div>
+      </main>
+    </div>
+
+    <!-- 底部购物车栏（固定） -->
+    <div class="cart-bar" id="cartBar">
+      <div class="cart-info">🛒 已选 <b id="cartCount">0</b> 件</div>
+      <button id="checkoutBtn" class="primary" style="width:auto;margin:0">去下单</button>
+    </div>
+  </div>
+
+  <!-- ========== ③ 下单结算弹窗 ========== -->
+  <div id="orderSheet" class="sheet-mask" style="display:none">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2>📝 确认订单</h2>
+        <button id="sheetClose" class="sheet-x">✕</button>
+      </div>
+      <p class="sheet-tip">下面是已勾选的菜，点 ✕ 可快速删除（现有菜为默认选择，不能删）</p>
+      <div id="sheetCart" class="sheet-cart"></div>
+      <div class="form-row">
+        <label>许愿🌟</label>
+        <textarea id="orderWish" placeholder="菜单里没有、但想吃的，写在这里（可留空）"></textarea>
+      </div>
+      <button id="submitOrder" class="primary">提交订单</button>
+      <p id="orderMsg" class="msg"></p>
+    </div>
+  </div>
+
+  <!-- ========== ④ 随机搭配弹窗 ========== -->
+  <div id="randomSheet" class="sheet-mask" style="display:none">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2>🎲 不知道吃啥？随机来几个</h2>
+        <button id="randomClose" class="sheet-x">✕</button>
+      </div>
+      <div class="random-box">
+        <input type="number" id="randomCount" min="1" max="20" value="3" placeholder="想做几道菜">
+        <button id="randomBtn" class="primary" style="width:auto;margin:0">帮我搭配</button>
+      </div>
+      <div id="randomResult" class="random-result"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
